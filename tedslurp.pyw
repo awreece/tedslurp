@@ -28,12 +28,25 @@ class Downloader(wx.Frame):
         super(Downloader, self).__init__(*args, **kwargs)
 
         panel = wx.Panel(self, wx.ID_ANY)
+
+        self.odirctrl = wx.DirPickerCtrl(panel, wx.ID_ANY, style=wx.DIRP_USE_TEXTCTRL)
+        odirsizer = wx.BoxSizer(wx.HORIZONTAL)
+        odirsizer.Add(wx.StaticText(panel, wx.ID_ANY, "Output Directory"), 1, wx.ALL, 5)
+        odirsizer.Add(self.odirctrl, 3, wx.ALL|wx.EXPAND, 5)
+
+        self.filterctrl = wx.TextCtrl(panel, wx.ID_ANY, value="sort=popular&topics%5B%5D=Science&language=en", style=wx.HSCROLL)
+        filtersizer = wx.BoxSizer(wx.HORIZONTAL)
+        filtersizer.Add(wx.StaticText(panel, wx.ID_ANY, "TED.com filter"), 1, wx.ALL, 5)
+        filtersizer.Add(self.filterctrl, 3, wx.ALL|wx.EXPAND, 5)
+
         self.button = wx.Button(panel, label="Start")
         self.button.Bind(wx.EVT_BUTTON, self.onButton)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.button, 0, wx.ALL|wx.CENTER, 5)
-        panel.SetSizer(sizer)
+        sizer.Add(filtersizer, 0, wx.ALL|wx.EXPAND)
+        sizer.Add(odirsizer, 0, wx.ALL|wx.EXPAND)
+        sizer.Add(self.button, 0, wx.ALL|wx.EXPAND)
+        panel.SetSizerAndFit(sizer)
 
     def onButton(self, event):
 	button = event.GetEventObject()
