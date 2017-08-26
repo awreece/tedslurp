@@ -5,23 +5,23 @@ import threading
 import time
 
 def MapAllWithProgress(elems, f, title="Working"):
-    dlg = wx.ProgressDialog(title, "", len(elems),
-	                    style=wx.PD_APP_MODAL|wx.PD_AUTO_HIDE|wx.PD_REMAINING_TIME)
-    cancelled = threading.Event()
-    dlg.Bind(wx.EVT_CLOSE, lambda _: cancelled.set())
-    def map_in_other_thread(elems, dlg):
-	    for (i, e) in enumerate(elems):
-		if cancelled.is_set() or dlg.WasCancelled():
-		    break
+    with wx.ProgressDialog(title, "", len(elems),
+	    style=wx.PD_APP_MODAL|wx.PD_AUTO_HIDE|wx.PD_REMAINING_TIME) as dlg:
+	cancelled = threading.Event()
+	dlg.Bind(wx.EVT_CLOSE, lambda _: cancelled.set())
+	def map_in_other_thread(elems, dlg):
+		for (i, e) in enumerate(elems):
+		    if cancelled.is_set() or dlg.WasCancelled():
+			break
 
-		wx.CallAfter(dlg.Update, i, str(e))
-		f(e)
-	    wx.CallAfter(dlg.EndModal, 0)
+		    wx.CallAfter(dlg.Update, i, str(e))
+		    f(e)
+		wx.CallAfter(dlg.EndModal, 0)
 
-    thd = threading.Thread(target=map_in_other_thread, args=(elems, dlg))
-    thd.daemon = True
-    thd.start()
-    dlg.ShowModal()
+	thd = threading.Thread(target=map_in_other_thread, args=(elems, dlg))
+	thd.daemon = True
+	thd.start()
+	dlg.ShowModal()
 
 class Downloader(wx.Frame):
     def __init__(self, *args, **kwargs):
