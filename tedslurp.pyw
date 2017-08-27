@@ -30,6 +30,7 @@ def MapAllWithProgress(elems, f, title="Working"):
         thd.daemon = True
         thd.start()
         dlg.ShowModal()
+        thd.join()
 
 def Warn(parent, message):
     with wx.MessageDialog(parent, message, caption="Warning!",
@@ -82,7 +83,7 @@ class Downloader(wx.Frame):
         odirsizer.Add(wx.StaticText(panel, wx.ID_ANY, "Output Directory"), 1, wx.ALL, 5)
         odirsizer.Add(self.odirctrl, 3, wx.ALL|wx.EXPAND, 5)
 
-        self.filterctrl = wx.TextCtrl(panel, wx.ID_ANY, value="sort=popular&topics%5B%5D=Science&language=en", style=wx.HSCROLL)
+        self.filterctrl = wx.TextCtrl(panel, wx.ID_ANY, value="sort=popular&topics%5B%5D=Science&language=en", style=wx.TE_NOHIDESEL)
         filtersizer = wx.BoxSizer(wx.HORIZONTAL)
         filtersizer.Add(wx.StaticText(panel, wx.ID_ANY, "TED.com filter"), 1, wx.ALL, 5)
         filtersizer.Add(self.filterctrl, 3, wx.ALL|wx.EXPAND, 5)
