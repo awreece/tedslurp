@@ -10,7 +10,7 @@ import logging
 import re
 import json
 import os
-import urlparse
+from urllib.parse import urlparse
 
 def MapAllWithProgress(elems, f, title="Working"):
     with wx.ProgressDialog(title, "", len(elems),
@@ -56,7 +56,7 @@ def download(link, odir):
     try:
         audio_link = get_audio_link(link)
         r = requests.get(audio_link, stream=True)
-        path = os.path.join(odir, os.path.basename(urlparse.urlparse(audio_link).path[1:]))
+        path = os.path.join(odir, os.path.basename(urlparse(audio_link).path[1:]))
 
         if os.path.exists(path):
             logging.warning("%s already existed", path)

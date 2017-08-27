@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import argparse
 import textwrap
 import time
-import urlparse
+from urllib.parse import urlparse
 import os
 import logging
 
@@ -43,7 +43,7 @@ for link in link_stream(args.filter, start=args.start, count=args.count):
     try:
         audio_link = get_audio_link(link)
         r = requests.get(audio_link, stream=True)
-        path = urlparse.urlparse(audio_link).path[1:]
+        path = urlparse(audio_link).path[1:]
 
         if os.path.exists(path):
             continue
