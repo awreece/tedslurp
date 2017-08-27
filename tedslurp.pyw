@@ -13,8 +13,8 @@ import os
 from urllib.parse import urlparse
 
 def MapAllWithProgress(elems, f, title="Working"):
-    with wx.ProgressDialog(title, "", len(elems),
-            style=wx.PD_APP_MODAL|wx.PD_AUTO_HIDE|wx.PD_REMAINING_TIME) as dlg:
+    with wx.GenericProgressDialog(title, "", len(elems),
+            style=wx.PD_APP_MODAL|wx.PD_AUTO_HIDE|wx.PD_REMAINING_TIME|wx.PD_CAN_ABORT) as dlg:
         cancelled = threading.Event()
         dlg.Bind(wx.EVT_CLOSE, lambda _: cancelled.set())
         def map_in_other_thread(elems, dlg):
@@ -29,8 +29,10 @@ def MapAllWithProgress(elems, f, title="Working"):
         thd = threading.Thread(target=map_in_other_thread, args=(elems, dlg))
         thd.daemon = True
         thd.start()
-        dlg.ShowModal()
-        thd.join()
+        try:
+                dlg.ShowModal()
+        finally:
+                thd.join()
 
 def Warn(parent, message):
     with wx.MessageDialog(parent, message, caption="Warning!",
