@@ -14,27 +14,27 @@ import urlparse
 
 def MapAllWithProgress(elems, f, title="Working"):
     with wx.ProgressDialog(title, "", len(elems),
-	    style=wx.PD_APP_MODAL|wx.PD_AUTO_HIDE|wx.PD_REMAINING_TIME) as dlg:
-	cancelled = threading.Event()
-	dlg.Bind(wx.EVT_CLOSE, lambda _: cancelled.set())
-	def map_in_other_thread(elems, dlg):
-		for (i, e) in enumerate(elems):
-		    if cancelled.is_set() or dlg.WasCancelled():
-			break
+            style=wx.PD_APP_MODAL|wx.PD_AUTO_HIDE|wx.PD_REMAINING_TIME) as dlg:
+        cancelled = threading.Event()
+        dlg.Bind(wx.EVT_CLOSE, lambda _: cancelled.set())
+        def map_in_other_thread(elems, dlg):
+                for (i, e) in enumerate(elems):
+                    if cancelled.is_set() or dlg.WasCancelled():
+                        break
 
-		    wx.CallAfter(dlg.Update, i, str(e))
-		    f(e)
-		wx.CallAfter(dlg.EndModal, 0)
+                    wx.CallAfter(dlg.Update, i, str(e))
+                    f(e)
+                wx.CallAfter(dlg.EndModal, 0)
 
-	thd = threading.Thread(target=map_in_other_thread, args=(elems, dlg))
-	thd.daemon = True
-	thd.start()
-	dlg.ShowModal()
+        thd = threading.Thread(target=map_in_other_thread, args=(elems, dlg))
+        thd.daemon = True
+        thd.start()
+        dlg.ShowModal()
 
 def Warn(parent, message):
     with wx.MessageDialog(parent, message, caption="Warning!",
-	                  style=wx.OK|wx.ICON_WARNING) as dlg:
-	dlg.ShowModal()
+                          style=wx.OK|wx.ICON_WARNING) as dlg:
+        dlg.ShowModal()
 
 def GetLinks(filter, page):
         r = requests.get("https://www.ted.com/talks?page=%d&%s" % (page, filter))
@@ -56,10 +56,10 @@ def download(link, odir):
     try:
         audio_link = get_audio_link(link)
         r = requests.get(audio_link, stream=True)
-	path = os.path.join(odir, os.path.basename(urlparse.urlparse(audio_link).path[1:]))
+        path = os.path.join(odir, os.path.basename(urlparse.urlparse(audio_link).path[1:]))
 
         if os.path.exists(path):
-	    logging.warning("%s already existed", path)
+            logging.warning("%s already existed", path)
         with open(path, "wb") as f:
             for data in r.iter_content(None):
                 f.write(data)
@@ -110,26 +110,26 @@ class Downloader(wx.Frame):
         page = self.pagectrl.GetValue()
 
         if not odir:
-	    Warn(self, "No output directory set")
-	    return
+            Warn(self, "No output directory set")
+            return
 
-	try:
-	    links = GetLinks(filter, page)
-	except e:
-		Warn(self, "Failed to get links for filter")
-		traceback.print_exc()
-		return
+        try:
+            links = GetLinks(filter, page)
+        except e:
+                Warn(self, "Failed to get links for filter")
+                traceback.print_exc()
+                return
 
-	MapAllWithProgress(links, lambda l: download(l, odir))
+        MapAllWithProgress(links, lambda l: download(l, odir))
 
     def onButton(self, event):
-	button = event.GetEventObject()
+        button = event.GetEventObject()
         button.Disable()
 
         try:
             self._onButton()
         finally:
-	    button.Enable()
+            button.Enable()
 
         
 
